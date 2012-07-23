@@ -19,8 +19,6 @@
         <ignoredProperty>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</ignoredProperty>
       </ignoredProperties>
       <abstractURIs>
-        <abstractURI>http://www8.informatik.uni-erlangen.de/behaim/voc/P_METAKOMMENTAR_C_GLOBUS-OBJEKT</abstractURI>
-        <abstractURI>http://www8.informatik.uni-erlangen.de/behaim/voc/P_KOMMENTAR_C_GLOBUS-OBJEKT</abstractURI>
       </abstractURIs>
       <imageURIs>
       </imageURIs>
