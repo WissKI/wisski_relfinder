@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+  <endpoints>
+    <endpoint>
+      <name>WissKI</name>
+      <abbreviation>wisski</abbreviation>
+      <description>The default WissKI</description>
+      <endpointURI>%{endpointURI}</endpointURI>
+      <defaultGraphURI>%{defaultGraphURI}</defaultGraphURI>
+      <method>GET</method>
+      <dontAppendSPARQL>false</dontAppendSPARQL>
+      <isVirtuoso>false</isVirtuoso>
+      <useProxy>false</useProxy>
+      <autocompleteURIs>
+        <autocompleteURI>http://www.w3.org/2000/01/rdf-schema#label</autocompleteURI>
+      </autocompleteURIs>
+      <autocompleteLanguage>en</autocompleteLanguage>
+      <ignoredProperties>
+        <ignoredProperty>http://www.w3.org/1999/02/22-rdf-syntax-ns#type</ignoredProperty>
+      </ignoredProperties>
+      <abstractURIs>
+        <abstractURI>http://www8.informatik.uni-erlangen.de/behaim/voc/P_METAKOMMENTAR_C_GLOBUS-OBJEKT</abstractURI>
+        <abstractURI>http://www8.informatik.uni-erlangen.de/behaim/voc/P_KOMMENTAR_C_GLOBUS-OBJEKT</abstractURI>
+      </abstractURIs>
+      <imageURIs>
+      </imageURIs>
+      <linkURIs>
+      </linkURIs>
+      <maxRelationLength>5</maxRelationLength>
+    </endpoint>
+  </endpoints>
+</data>

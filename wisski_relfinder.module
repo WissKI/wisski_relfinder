@@ -1,0 +1,202 @@
+<?php
+// $ID$
+
+
+function wisski_relfinder_perm() {
+  return array('wisski administrate relfinder', 'wisski use relfinder');
+}
+
+
+function wisski_relfinder_menu() {
+
+  $items = array();
+  
+  $items['admin/settings/wisski/RelFinder'] = array(
+    'title' => 'RelFinder',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('wisski_relfinder_admin_settings'),
+		'type'     => MENU_LOCAL_TASK,
+    'access arguments' => array('wisski administrate relfinder'),
+  );
+
+  $items['wisski/relfinder/RelFinder.swf'] = array(
+   	'title'    => 'RelFinder @ WissKI',
+    'page callback' => 'wisski_relfinder_provide_binary',
+		'type'     => MENU_CALLBACK,
+    'access callback' => 'wisski_relfinder_access',
+  );
+
+	$items['wisski/relfinder/config/Config.xml'] = array(
+   	'title'    => '',
+    'page callback' => 'wisski_relfinder_provide_config',
+		'type'     => MENU_CALLBACK,
+    'access arguments' => array('wisski use relfinder'),
+  );
+
+	$items['wisski/relfinder/config/examples.xml'] = array(
+   	'title'    => '',
+    'page callback' => 'wisski_relfinder_provide_examples',
+		'type'     => MENU_CALLBACK,
+    'access arguments' => array('wisski use relfinder'),
+  );
+	
+  return $items;
+}
+
+
+/** Own access check for AND-ing two permissions
+*/
+function wisski_relfinder_access() {
+  return user_access('wisski endpoint supports select')
+      && user_access('wisski use relfinder');
+}
+
+
+/** Checks if the binary exists and forwards it to the client
+*/
+function wisski_relfinder_provide_binary() {
+  
+  $file = wisski_relfinder_check_file();
+  if ($file === FALSE) return "";
+  
+  drupal_set_header('Content-Type: application/x-shockwave-flash; charset=ISO-8859-1');
+  
+  // pass file thru to stdout
+  readfile($file);
+    
+}
+
+
+function wisski_relfinder_provide_config() {
+  
+  drupal_set_header('Content-Type: application/xml; charset=utf-8');
+  
+  print wisski_relfinder_get_config();
+  
+}
+
+
+function wisski_relfinder_provide_examples() {
+  
+  drupal_set_header('Content-Type: application/xml; charset=utf-8');
+  
+  print wisski_relfinder_get_examples();
+ }
+
+
+/**Check if the SWF file exists. If not trigger a message and set an 404 header.
+* @return the filename if file exists, FALSE otherwise
+*/
+function wisski_relfinder_check_file($supress_warn = FALSE) {
+
+  $file = dirname(__FILE__) . '/../../libraries/relfinder/RelFinder.swf';
+
+  if (!file_exists($file) || !is_file($file)) {
+    
+    if (!$supress_warn) {
+      drupal_set_header('HTTP/1.1 404 Not Found');
+      drupal_set_message(t('The RelFinder library is not installed correctly: The file %file does not exist. Please install the RelFinder library according to the instructions.', array('%file' => $file)), 'error');
+    }
+
+    return FALSE;
+
+  } else {
+    
+    return $file;
+
+  }
+
+}
+
+
+/**Get the xml config file, either the default one or one configured on the 
+* admin pages.
+*/
+function wisski_relfinder_get_config() {
+  
+  // the one configured on the admin pages is stored in the variables 
+  $config = variable_get('wisski_relfinder_config', NULL);
+  
+  // get the default one and adopt it to the system's properties
+  if ($config === NULL) {
+    
+    $config = file_get_contents(dirname(__FILE__) . '/config.xml');
+    
+    global $base_root, $base_path;
+    $config = str_replace('%{defaultGraphURI}', wisski_store_getObj()->wisski_ARCAdapter_graphName(), $config);
+    $config = str_replace('%{endpointURI}', $base_root . $base_path . 'wisski/endpoint', $config);
+
+  }
+  
+  return $config;
+
+}
+
+
+
+/**Get the xml examples file, either the default one or one configured on the 
+* admin pages.
+*/
+function wisski_relfinder_get_examples() {
+  
+  // the one examplesured on the admin pages is stored in the variables 
+  $examples = variable_get('wisski_relfinder_examples', NULL);
+  
+  // get the default one and adopt it to the system's properties
+  if ($examples === NULL) {
+    
+    $examples = file_get_contents(dirname(__FILE__) . '/examples.xml');
+    
+    global $base_root, $base_path;
+    $examples = str_replace('%{defaultGraphURI}', wisski_store_getObj()->wisski_ARCAdapter_graphName(), $examples);
+    $examples = str_replace('%{endpointURI}', $base_root . $base_path . 'wisski/endpoint', $examples);
+
+  }
+  
+  return $examples;
+
+}
+
+
+function wisski_relfinder_admin_settings($form) {
+  
+  $file = wisski_relfinder_check_file(TRUE);
+  if ($file === FALSE) {
+    drupal_set_message(t('The RelFinder library is not installed correctly. See below or installation instructions.'));
+  }
+  
+  $install_text = file_get_contents(dirname(__FILE__) . '/INSTALLATION.html');
+
+  $form = array();
+  $form['wisski_relfinder_install_info'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Installation instructions'),
+    '#collapsible' => TRUE,
+    '#collapsed' => ($file !== FALSE),
+  );
+  $form['wisski_relfinder_install_info']['wisski_relfinder_text'] = array(
+    '#type' => 'markup',
+    '#value' => $install_text,
+  );
+  $form['wisski_relfinder_config_fieldset'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('RelFinder Standard Configuration Settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => ($file === FALSE),
+  );
+  $form['wisski_relfinder_config_fieldset']['wisski_relfinder_config'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Config settings'),
+    '#description' => t('This is the settings file as sent to the RelFinder program. For detailed information please see the file config/Config.xml in the RelFinder library path or @rf_url.', array('@rf_url' => l(t('the RelFinder page'), 'http://www.visualdataweb.org/configuration.php'))),
+    '#default_value' => wisski_relfinder_get_config(),
+  );
+  $form['wisski_relfinder_config_fieldset']['wisski_relfinder_examples'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Examples settings'),
+    '#description' => t('This is the examples file as sent to the RelFinder program. For detailed information please see the file config/examples.xml in the RelFinder library path or the example on @rf_url.', array('@rf_url' => l(t('the RelFinder page'), 'http://www.visualdataweb.org/integrating.php'))),
+    '#default_value' => wisski_relfinder_get_examples(),
+  );
+
+  return system_settings_form($form);
+
+}

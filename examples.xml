@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<data>
+	<example>
+		<endpoint>wisski</endpoint>
+		<object>
+			<label>E21 Person</label>
+			<uri>http://erlangen-crm.org/120111/E21_Person</uri>
+		</object>
+		<object>
+			<label>E2 Temporal Entity</label>
+			<uri>http://erlangen-crm.org/120111/E2_Temporal_Entity</uri>
+		</object>
+		<object>
+			<label>E41 Appellation</label>
+			<uri>http://erlangen-crm.org/120111/E41_Appellation</uri>
+		</object>
+	</example>
+</data>

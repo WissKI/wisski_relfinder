@@ -1,0 +1,6 @@
+; $Id$
+name = WissKI RelFinder
+description = Integrates the RelFinder tool into WissKI.
+core = 6.x
+package = "WissKI"
+dependencies[] = wisski_endpoint

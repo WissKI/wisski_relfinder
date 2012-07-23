@@ -1,0 +1,6 @@
+<?php
+
+function wisski_relfinder_uninstall() {
+  variable_del('wisski_relfinder_config');
+  variable_del('wisski_relfinder_examples');
+}
